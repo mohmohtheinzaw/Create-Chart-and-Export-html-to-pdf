@@ -1,0 +1,50 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const http_1 = __importDefault(require("http"));
+const express_1 = __importDefault(require("express"));
+const body_parser_1 = __importDefault(require("body-parser"));
+const express_validator_1 = __importDefault(require("express-validator"));
+const charts = require('./route/chart');
+class App {
+    constructor() {
+        this.httpPort = 3000;
+        this.configs = [
+            {
+                name: "Access-Control-Allow-Origin",
+                val: "*",
+            },
+            {
+                name: "Access-Control-Allow-Methods",
+                val: "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+            },
+            {
+                name: "Access-Control-Allow-Headers",
+                val: "Origin, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5,Content-Type, Date, X-Api-Version, x-access-token",
+            }
+        ];
+        this.setupApplication();
+    }
+    setupApplication() {
+        this.app = (0, express_1.default)();
+        //initialize http server
+        this.httpServer = http_1.default.createServer(this.app);
+        this.app.use((req, res, next) => { this.configs.map((config) => res.set(config.name, config.val)); next(); });
+        //use third party libaray
+        this.app.use(body_parser_1.default.json());
+        this.app.use(body_parser_1.default.urlencoded({ extended: true }));
+        this.app.use((0, express_validator_1.default)());
+        //this.app.use("/api/items",items)
+        this.app.use("/api/charts", charts);
+        // this.app.use("/api/test",test)
+    }
+    startServer() {
+        this.httpServer.listen(this.httpPort, () => {
+            console.log("Http server is running on port" + this.httpPort);
+        });
+    }
+}
+const expressApp = new App();
+expressApp.startServer();
