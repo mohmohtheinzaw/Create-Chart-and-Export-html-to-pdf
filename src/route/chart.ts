@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-
+import jsPDF from "jspdf";
 
 const ChartJsImage = require('chartjs-to-image');
 
@@ -31,6 +31,17 @@ router.get("/chart",async function (){
         const dataUrl = await myChart.toDataUrl();
         console.log(dataUrl);
         return dataUrl
+    } catch (error) {
+        console.log(error)
+    }
+});
+
+router.get("/export-to-pdf",async function(){
+    try {
+        const dataUrl = await myChart.toDataUrl()
+        const pdf = new jsPDF()
+        pdf.addImage(dataUrl,"PNG",10,10,100,75);
+        pdf.save("BarChart.pdf");
     } catch (error) {
         console.log(error)
     }
