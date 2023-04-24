@@ -1,6 +1,8 @@
+const fs = require('fs')
 const express = require("express")
 const router = express.Router()
 import jsPDF from "jspdf";
+var htmlToPdf = require('html-pdf-node');
 
 const ChartJsImage = require('chartjs-to-image');
 
@@ -26,6 +28,7 @@ myChart.setConfig({
 },
 });
 
+
 router.get("/chart",async function (){
     try {
         const dataUrl = await myChart.toDataUrl();
@@ -35,6 +38,7 @@ router.get("/chart",async function (){
         console.log(error)
     }
 });
+
 
 router.get("/export-to-pdf",async function(){
     try {
@@ -47,4 +51,17 @@ router.get("/export-to-pdf",async function(){
     }
 })
 
+
+router.get('/export-html-to-pdf',async function(req:any,res:any){
+  try {
+    const html = fs.readFileSync('src/route/index.html','utf8');
+    let options = {format:'A4',path:'output.pdf'};
+    const pdfBuffer = await htmlToPdf.generatePdf({content:html},options);
+    fs.writeFileSync('output.pdf',pdfBuffer);
+    res.status(200).json({msg:"ok"})
+    console.log('PDF generated successfully.');
+  } catch (error) {
+    console.log(error);
+  }
+})
 module.exports = router;
