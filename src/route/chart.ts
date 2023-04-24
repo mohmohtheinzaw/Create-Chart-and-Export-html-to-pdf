@@ -39,7 +39,6 @@ router.get("/chart",async function (){
     }
 });
 
-
 router.get("/export-to-pdf",async function(){
     try {
         const dataUrl = await myChart.toDataUrl()
@@ -64,4 +63,5 @@ router.get('/export-html-to-pdf',async function(req:any,res:any){
     console.log(error);
   }
 })
+
 module.exports = router;
